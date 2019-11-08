@@ -74,7 +74,7 @@ private:
 	{
 		PFNEGLGETPLATFORMDISPLAYEXTPROC eglGetPlatformDisplayEXT =(PFNEGLGETPLATFORMDISPLAYEXTPROC)eglGetProcAddress("eglGetPlatformDisplayEXT");
 		if(attribs.size() && attribs.back() != EGL_NONE) attribs.push_back(EGL_NONE);
-		return eglGetPlatformDisplayEXT(EGL_PLATFORM_DEVICE_EXT,plat.handle,attribs.data());
+		return eglGetPlatformDisplayEXT(EGL_PLATFORM_DEVICE_EXT,plat.handle,attribs.size() ? attribs.data() : nullptr);
 	}
 	std::shared_ptr<int> copycounter;
 public:
@@ -94,6 +94,9 @@ public:
 		if(copycounter.unique()) eglTerminate(handle);
 	}
 	std::vector<Config> configs(std::vector<EGLint> attrib=std::vector<EGLint>()) const;
+	static Display Default() {
+		return eglGetDisplay(EGL_DEFAULT_DISPLAY);
+	}
 };
 std::ostream& operator<<(std::ostream& out,const Device& dv)
 {
@@ -110,7 +113,8 @@ public:
 	Config(const Display& disp,std::vector<EGLint> attribs=std::vector<EGLint>())
 	{
 		if(attribs.size() && attribs.back() != EGL_NONE) attribs.push_back(EGL_NONE);
-		if(!eglChooseConfig(disp.handle,attribs.data(),&handle,1,nullptr))
+		EGLint configSel;
+		if(!eglChooseConfig(disp.handle,attribs.size() ? attribs.data() : nullptr,&handle,1,&configSel))
 		{
 			throw std::runtime_error("Failed to find matching config");
 		}
@@ -120,13 +124,13 @@ std::vector<Config> Display::configs(std::vector<EGLint> attribs) const
 {
 	if(attribs.size() && attribs.back() != EGL_NONE) attribs.push_back(EGL_NONE);
 	EGLint numConfigs=0;
-	if(!eglChooseConfig(handle,attribs.data(),nullptr,0,&numConfigs) || numConfigs==0)
+	if(!eglChooseConfig(handle,attribs.size() ? attribs.data() : nullptr,nullptr,0,&numConfigs) || numConfigs==0)
 	{
 		return std::vector<Config>();
 	}
 	std::vector<EGLConfig> cfgvec(numConfigs);
 	EGLint numConfigs2=0;
-	if(!eglChooseConfig(handle,attribs.data(),cfgvec.data(),numConfigs,&numConfigs2) || numConfigs2==0)
+	if(!eglChooseConfig(handle,attribs.size() ? attribs.data() : nullptr,cfgvec.data(),numConfigs,&numConfigs2) || numConfigs2==0)
 	{
 		return std::vector<Config>();
 	}
@@ -147,7 +151,7 @@ public:
    		)
 	{
 		if(attribs.size() && attribs.back() != EGL_NONE) attribs.push_back(EGL_NONE);
-		handle=eglCreateContext(display.handle,config.handle,share_ctx.handle,attribs.data());
+		handle=eglCreateContext(display.handle,config.handle,share_ctx.handle,attribs.size() ? attribs.data() : nullptr);
 		if(handle == EGL_NO_CONTEXT)
 		{
 			throw std::runtime_error("Failed to create context");

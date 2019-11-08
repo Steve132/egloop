@@ -8,7 +8,8 @@ int main(int,char**)
 	{
 		std::cout << egldevices[i] << std::endl;
 	}
-	egloop::Display offscreen_display(egldevices[0]);
+//	egloop::Display offscreen_display(egldevices[0]);
+	egloop::Display offscreen_display=egloop::Display::Default();
 	std::cout << "The EGL version is " << offscreen_display.egl_major << "." << offscreen_display.egl_minor << std::endl;
 
 	
