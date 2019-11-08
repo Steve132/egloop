@@ -1,0 +1,2 @@
+# egloop
+OOP EGL library
