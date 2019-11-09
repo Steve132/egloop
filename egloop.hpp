@@ -136,6 +136,13 @@ std::vector<Config> Display::configs(std::vector<EGLint> attribs) const
 	}
 	return std::vector<Config>(cfgvec.begin(),cfgvec.end());
 }
+class Surface
+{
+public:
+	EGLSurface handle;
+	Surface(EGLSurface h):handle(h)
+	{}
+};
 class Context
 {
 public:
@@ -155,6 +162,13 @@ public:
 		if(handle == EGL_NO_CONTEXT)
 		{
 			throw std::runtime_error("Failed to create context");
+		}
+	}
+	void makeCurrent(const Display& disp,const Surface& read_surface=Surface(EGL_NO_SURFACE),const Surface& write_surface=Surface(EGL_NO_SURFACE))
+	{
+		if(!eglMakeCurrent(disp.handle,read_surface.handle,write_surface.handle,handle))
+		{
+			throw std::runtime_error("Failed to make context current");
 		}
 	}
 };

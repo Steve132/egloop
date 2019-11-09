@@ -21,8 +21,10 @@ int main(int,char**)
 
 	egloop::Context offscreen_context(offscreen_display,opengl_anyconfig,{
 		EGL_CONTEXT_OPENGL_PROFILE_MASK,EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
-		EGL_CONTEXT_MAJOR_VERSION,3,
-		EGL_CONTEXT_MINOR_VERSION,1
+		EGL_CONTEXT_MAJOR_VERSION,4,
+		EGL_CONTEXT_MINOR_VERSION,4
 	});
+	
+	offscreen_context.makeCurrent(offscreen_display);
 	return 0;
 }

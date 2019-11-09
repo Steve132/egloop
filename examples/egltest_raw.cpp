@@ -41,10 +41,9 @@ int main(int argc, char *argv[])
 	std::cerr << "No config" << std::endl;
 }
 
-  // 3. Create a surface
- // EGLSurface eglSurf = eglCreatePbufferSurface(eglDpy, eglCfg, 
-     //                                          pbufferAttribs);
-
+   //3. Create a surface
+	//EGLSurface eglSurf = eglCreatePbufferSurface(eglDpy, eglCfg, pbufferAttribs);
+  EGLSurface eglSurf = EGL_NO_SURFACE;
   // 4. Bind the API
   eglBindAPI(EGL_OPENGL_API);
 
@@ -56,7 +55,10 @@ int main(int argc, char *argv[])
 	  std::cerr << "No context!" << std::endl;
   }
 
-  //eglMakeCurrent(eglDpy, eglSurf, eglSurf, eglCtx);
+  if(!eglMakeCurrent(eglDpy, eglSurf, eglSurf, eglCtx))
+  {
+	  std::cerr << "Failure to make surface current." << std::endl;
+  }
 
   // from now on use your OpenGL context
 
